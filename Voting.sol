@@ -60,4 +60,129 @@ contract Voting {
         }
     }
 
+    //反转
+    function reverseString(string memory name) pure external returns (string memory) {
+        bytes memory b = bytes(name);
+        uint len = b.length;
+        for (uint i = 0; i < len / 2; i++) {
+            bytes1 temp = b[i];
+            b[i] = b[len - 1 - i];
+            b[len - 1 - i] = temp;
+        }
+        return string(b);
+    }
+    //整数转罗马数字
+    function romanToInt(string calldata romon) pure external returns (uint256) {
+        bytes calldata b = bytes(romon);
+        uint256 total = 0;
+        uint256 prev = 0;
+
+        for (uint256 i = b.length; i > 0; i--) {
+            uint256 value = _romanValue(b[i - 1]);
+
+            // 如果当前值 < 上一个（右边字符），说明需要做减法（如 IV = 5 - 1）
+            if (value < prev) {
+                total -= value;
+            } else {
+                total += value;
+            }
+
+            prev = value;
+        }
+
+        return total;
+    }
+    function _romanValue(bytes1 r) pure internal returns (uint256) {
+        if (r == "I") return 1;
+        if (r == "V") return 5;
+        if (r == "X") return 10;
+        if (r == "L") return 50;
+        if (r == "C") return 100;
+        if (r == "D") return 500;
+        if (r == "M") return 1000;
+        revert("Invalid Roman numeral");
+    }
+
+    // int 转罗马字符
+    function intToRoman(uint256 value) pure external returns (string memory) {
+        require(value > 0 && value <= 3999, "Value out of range");
+        // 所有 Roman 组合（含特殊组合）
+        string[13] memory romans = [
+            "M",  "CM", "D",  "CD", "C",
+            "XC", "L",  "XL", "X",  "IX",
+            "V",  "IV", "I"
+        ];
+
+        // 对应数值
+        uint256[13] memory vals = [
+            uint256(1000), 900, 500, 400, 100,
+            90,   50,  40,  10,  9,
+            5,    4,   1
+        ];
+
+        string memory result = "";
+        for (uint256 i = 0; i < romans.length; i++) 
+        {
+            while (value >= vals[i]) {
+                value = value - vals[i];
+                result = string.concat(result, romans[i]);
+            }   
+        }
+        return result;
+    }
+
+    //合并两个有序数组 (Merge Sorted Array)
+    function mergeSortedArray(uint256[] calldata arrayA, uint256[] calldata arrayB) external pure returns (uint256[] memory) {
+        uint256 lengthA = arrayA.length;
+        uint256 lengthB = arrayB.length;
+        uint256 i = 0;
+        uint256 j = 0;
+        uint256 k = 0;
+        uint256[] memory result = new uint256[](lengthA+lengthB);
+        while (i < lengthA && j < lengthB) {
+            if (arrayA[i] < arrayB[j]) {
+                result[k] = arrayA[i];
+                i++;
+            } else {
+                result[k] = arrayB[j];
+                j++;
+            }
+            k++;
+        }
+        while(i < lengthA) {
+            result[k] = arrayA[i];
+            k++;
+            i++;
+        }
+        while (j < lengthB) {
+            result[k] = arrayB[j];
+            k++;
+            j++;
+        }
+        return result;
+    }
+
+    // 二分查找 (Binary Search)
+    function binarySearch(uint256[] calldata array, uint256 target) external pure returns (int256) {
+
+        if (array.length == 0) {
+            return -1;
+        }
+        uint256 left = 0;
+        uint256 right = array.length-1;
+
+
+        while (left <= right) {
+            uint256 mid = left + (right-left)/2;
+            if (array[mid] == target) {
+                return int256(mid);
+            } else if (array[mid] > target) {
+                right = mid-1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return -1;
+    }
+
 }
